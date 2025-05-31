@@ -1,0 +1,85 @@
+Bitmap Font Renderer (BFR)
+==========================
+
+This is a minimal bitmap font rendering library using SDL.
+
+Usage:
+------
+1. Define `BFR_IMPLEMENTATION` in *one* source file before including `bfr.h`:
+
+   #define BFR_IMPLEMENTATION
+   #include "bfr.h"
+
+2. Configure and initialize with `bfr_init()` using a `Font_config` struct.
+
+3. Load the font texture using `load_font_image(renderer, "font.png", &ptr)`
+   where ptr is a pointer to a SDL_Texture.
+
+4. Load ASCII values using `load_ascii("input")` — one integer per line.
+
+5. Use `render_ch()`, `render_line()`, or `render_lines()` to draw text.
+
+6. Call `bfr_destroy()` when done.
+
+Files:
+------
+- `bfr.h`: Main header and implementation (define `BFR_IMPLEMENTATION` in one `.c` file).
+- `font.png`: Bitmap font image (user-provided).
+- `input`: ASCII codes for characters in font image (newline-separated integers).
+
+Definition:
+-----------
+struct Font_config {
+    int ch_w;        // Width of each character in pixels
+    int ch_h;        // Height of each character in pixels
+    int margin_x;    // Left margin of character grid in texture
+    int margin_y;    // Top margin of character grid in texture
+    int ch_sp;       // Horizontal spacing between characters in texture
+    int line_sp;     // Vertical spacing between lines in texture
+    int ch_line;     // Number of characters per line in the texture
+    int nm_line;     // Total number of lines in the texture
+    int nm_ch;       // Total number of characters (used to allocate ASCII table)
+    int scale;       // Scale factor to enlarge characters during rendering
+};
+
+Functions:
+----------
+
+1. int bfr_init(struct Font_config conf)
+   - Initializes internal font configuration using the provided settings.
+   - Must be called before rendering.
+   - Returns 0 on success.
+
+2. void bfr_destroy()
+   - Frees internal memory used for font configuration and ASCII table.
+
+3. int load_font_image(SDL_Renderer renderer, char* file)
+  - Load a font texture from file and set it to blend mode.
+  - Returns 0 on success, 1 on failure.
+
+4. void load_ascii(char* file)
+   - Loads ASCII codepoints from a plain text file.
+   - Each line should contain a single integer (ASCII value).
+   - Total lines should match `nm_ch` in configuration.
+
+5. void render_ch(SDL_Renderer* renderer, SDL_Texture* font_texture, char ch, int ch_in_line_i, int line_i)
+   - Renders a single character `ch` using its lookup index.
+   - `ch_in_line_i` is the horizontal index in the text.
+   - `line_i` is the vertical line index.
+
+6. void render_line(SDL_Renderer* renderer, SDL_Texture* font_texture, char* ch, int line_i)
+   - Renders a full line of text `ch` at line index `line_i`.
+
+7. void render_lines(SDL_Renderer* renderer, SDL_Texture* font_texture, char* ch)
+   - Renders multiple lines of text split by newline (`\n`) characters.
+
+Dependencies:
+-------------
+- SDL2
+- SDL2_image
+
+Notes:
+------
+- Ensure that `font.png` and ASCII input file are available before rendering.
+- Call `SDL_RenderPresent()` after rendering.
+- Always call `bfr_destroy()` before quitting.
