@@ -12,8 +12,7 @@ Usage:
 
 2. Configure and initialize with `bfr_init()` using a `Font_config` struct.
 
-3. Load the font texture using `load_font_image(renderer, "font.png", &ptr)`
-   where ptr is a pointer to a SDL_Texture.
+3. Load the font texture using `load_font_image(renderer, "font.png", &ptr)`.
 
 4. Load ASCII values using `load_ascii("input")` — one integer per line.
 
@@ -53,8 +52,9 @@ Functions:
 2. void bfr_destroy()
    - Frees internal memory used for font configuration and ASCII table.
 
-3. int load_font_image(SDL_Renderer renderer, char* file)
+3. int load_font_image(SDL_Renderer renderer, char* file, &ptr)
   - Load a font texture from file and set it to blend mode.
+  - ptr is a pointer to a `SDL_Texture`.
   - Returns 0 on success, 1 on failure.
 
 4. void load_ascii(char* file)
