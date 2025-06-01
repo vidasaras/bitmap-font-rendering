@@ -2,6 +2,7 @@
 #define BFR_H
 
 #include <stdlib.h>
+#include <string.h>
 
 struct Font_config {
   int ch_w,
@@ -22,7 +23,7 @@ void bfr_destroy();
 // Frees memory used by the font system.
 int load_font_image(SDL_Renderer* renderer, char* file, SDL_Texture** font_texture);
 // Loads the font image
-void load_ascii(char* file);
+void load_ascii(char* file, int syntaxValid);
 // Loads ASCII codes from a file into memory.
 void render_ch(SDL_Renderer* renderer, SDL_Texture* font_texture, char ch, int ch_in_line_i, int line_i);
 // Renders a single character at the specified grid position.
@@ -60,7 +61,53 @@ int load_font_image(SDL_Renderer* renderer, char* file, SDL_Texture** font_textu
   return 0;
 }
 
-void load_ascii(char* file){
+void parse_ascii_file(char* file){
+  FILE* file_ptr;
+  file_ptr = fopen(file, "r");
+
+  char line[20];
+  int jump_ascii_by = 1;
+  int prev_jump_ascii_by = 1;
+  int curr_ascii = 0;
+  int prev_ascii = 0;
+  int curr_i = 0;
+  int jump_i = 0;
+  while(fgets(line, 20, file_ptr) != NULL){
+    char* token = strtok(line, ":"); // the index start points
+    jump_i = atoi(token);
+    token = strtok(NULL, ":"); // the ascii values
+    if(strchr(token, 'x') != NULL){
+      char* ascii_ = strtok(token, "x");
+      prev_ascii = curr_ascii;
+      curr_ascii = atoi(ascii_);
+      prev_jump_ascii_by = jump_ascii_by;
+      jump_ascii_by = atoi(strtok(NULL, "x"));
+    } else {
+      prev_ascii = curr_ascii;
+      curr_ascii = atoi(token);
+      prev_jump_ascii_by = jump_ascii_by;
+      jump_ascii_by = 1;
+    }
+    if (curr_i < jump_i-1){
+      int gap = jump_i - curr_i;
+      for (int i = 0; i < gap; i++){
+        ascii[curr_i - 1] = prev_ascii + prev_jump_ascii_by*i;
+        curr_i++;
+      }
+      continue;
+    }
+    ascii[curr_i] = curr_ascii;
+    curr_i++;
+  }
+
+  fclose(file_ptr);
+}
+
+void load_ascii(char* file, int syntaxValid){
+  if (syntaxValid == 1){
+    parse_ascii_file(file);
+    return;
+  }
   FILE* file_ptr;
   file_ptr = fopen(file, "r");
 

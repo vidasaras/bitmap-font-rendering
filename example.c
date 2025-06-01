@@ -34,7 +34,7 @@ int main(){
   SDL_Texture* font_texture = NULL;
   load_font_image(renderer, "font.png", &font_texture);
 
-  load_ascii("input");
+  load_ascii("input2", 1);
 
   render_lines(renderer, font_texture, "Hello, World!");
 

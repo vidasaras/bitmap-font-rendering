@@ -14,7 +14,7 @@ Usage:
 
 3. Load the font texture using `load_font_image(renderer, "font.png", &ptr)`.
 
-4. Load ASCII values using `load_ascii("input")` — one integer per line.
+4. Load ASCII values using `load_ascii("input", syntaxValid)`.
 
 5. Use `render_ch()`, `render_line()`, or `render_lines()` to draw text.
 
@@ -57,10 +57,37 @@ Functions:
   - ptr is a pointer to a `SDL_Texture`.
   - Returns 0 on success, 1 on failure.
 
-4. void load_ascii(char* file)
+4. void load_ascii(char* file, int syntaxValid)
    - Loads ASCII codepoints from a plain text file.
-   - Each line should contain a single integer (ASCII value).
-   - Total lines should match `nm_ch` in configuration.
+
+   if syntaxValid = 0 then
+    - Each line should contain a single integer (ASCII value).
+    - Total lines should match `nm_ch` in configuration.
+
+   if syntaxValid = 1 then
+    Each line should contain a couplet of integers in the following format.
+        Index starting point : ASCII value for that starting index
+    The programme will store the ASCII values as (index++:ASCII++) til it is said
+    to stop in the next line's Index starting point.
+    ex:
+        1:65
+        27:97
+        53:0
+    This will store from 1:A(65) to 26:Z(whatever ascii it is from 65) and
+    27:a(97) to 52:z(...). a placeholder of 53 which tells the starting index
+    27 to stop at index 52 is needed otherwise sth happens (Im too lazy to find out).
+    You can change how many steps it takes from one ASCII value to other.
+    ex:
+        63:43x2
+        65:...
+        ...
+    This will store 63:+(43) to 64:-(45) .
+    you can put one index per one ASCII as well here (but whats the point,
+    make your font png organized in a way that is easy to index by the ASCII values).
+    ex:
+        88:32
+        89:0 (optional if the nm_ch=88)
+    This will store 88:$(32) .
 
 5. void render_ch(SDL_Renderer* renderer, SDL_Texture* font_texture, char ch, int ch_in_line_i, int line_i)
    - Renders a single character `ch` using its lookup index.
