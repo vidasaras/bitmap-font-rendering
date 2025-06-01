@@ -2,6 +2,7 @@ Bitmap Font Renderer (BFR)
 ==========================
 
 This is a minimal bitmap font rendering library using SDL.
+(This is a "trust-user" implementation. So, no error handling.)
 
 Usage:
 ------
