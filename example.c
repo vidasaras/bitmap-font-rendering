@@ -14,8 +14,7 @@ struct Font_config font_config = {
   .line_sp = 8,
   .ch_line = 13,
   .nm_line = 7,
-  .nm_ch = 88,
-  .scale = 1
+  .nm_ch = 88
 };
 
 int main(){
@@ -36,7 +35,20 @@ int main(){
 
   load_ascii("input2", 1);
 
-  render_lines(renderer, font_texture, "Hello, World!");
+  SDL_Rect rect = {100, 100, 200, 300};
+  SDL_SetRenderDrawColor(renderer, 250, 0, 0, 250);
+
+  SDL_RenderDrawRect(renderer, &rect);
+
+  Font_Render_Params params  = {
+    (Pair_O_Vals) {100, 100}, //dst
+    (Pair_O_Vals) {10, 10}, // margin
+    (Pair_O_Vals) {3, 8}, // padding of characters and lines
+    (Pair_O_Vals) {1, 1}, // scale in w and h
+    0 // wrap length
+  };
+
+  render_lines(renderer, font_texture, "Hello, World!", &params);
 
   SDL_RenderPresent(renderer);
   sleep(3);

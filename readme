@@ -39,7 +39,6 @@ struct Font_config {
     int ch_line;     // Number of characters per line in the texture
     int nm_line;     // Total number of lines in the texture
     int nm_ch;       // Total number of characters (used to allocate ASCII table)
-    int scale;       // Scale factor to enlarge characters during rendering
 };
 
 Functions:

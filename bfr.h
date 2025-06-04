@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-struct Font_config {
+typedef struct Font_config {
   int ch_w,
       ch_h,
       margin_x,
@@ -13,9 +13,20 @@ struct Font_config {
       line_sp,
       ch_line,
       nm_line,
-      nm_ch,
-      scale;
-};
+      nm_ch;
+} Font_config;
+
+typedef struct Pair_O_Vals{
+  int a, b;
+} Pair_O_Vals;
+
+typedef struct Font_Render_Params {
+  struct Pair_O_Vals dst,
+                     margin,
+                     text_padding,
+                     scale;
+  int line_width;
+} Font_Render_Params;
 
 int bfr_init(struct Font_config conf);
 // Initializes the font system with the given configuration.
@@ -25,11 +36,11 @@ int load_font_image(SDL_Renderer* renderer, char* file, SDL_Texture** font_textu
 // Loads the font image
 void load_ascii(char* file, int syntaxValid);
 // Loads ASCII codes from a file into memory.
-void render_ch(SDL_Renderer* renderer, SDL_Texture* font_texture, char ch, int ch_in_line_i, int line_i);
+void render_ch(SDL_Renderer* renderer, SDL_Texture* font_texture, char ch, int ch_in_line_i, int line_i, Font_Render_Params* params);
 // Renders a single character at the specified grid position.
-void render_line(SDL_Renderer* renderer, SDL_Texture* font_texture, char* ch, int line_i);
+void render_line(SDL_Renderer* renderer, SDL_Texture* font_texture, char* ch, int line_i, Font_Render_Params* params);
 // Renders a line of text at the given line index.
-void render_lines(SDL_Renderer* renderer, SDL_Texture* font_texture, char* ch);
+void render_lines(SDL_Renderer* renderer, SDL_Texture* font_texture, char* ch, Font_Render_Params* params);
 // Renders multiple lines of text separated by '\n'.
 
 #ifdef BFR_IMPLEMENTATION
@@ -122,7 +133,7 @@ void load_ascii(char* file, int syntaxValid){
   fclose(file_ptr);
 }
 
-void render_ch(SDL_Renderer* renderer, SDL_Texture* font_texture, char ch, int ch_in_line_i, int line_i){
+void render_ch(SDL_Renderer* renderer, SDL_Texture* font_texture, char ch, int ch_in_line_i, int line_i, Font_Render_Params* params){
   int i = 0;
   while (i < BFRfont_config->nm_ch){
     if (ch == ascii[i]) break;
@@ -138,27 +149,27 @@ void render_ch(SDL_Renderer* renderer, SDL_Texture* font_texture, char ch, int c
 
   SDL_Rect r_src = {x, y, BFRfont_config->ch_w, BFRfont_config->ch_h};
   SDL_Rect r_dst = {
-    BFRfont_config->ch_w * ch_in_line_i + ch_in_line_i * 3,
-    BFRfont_config->ch_h * line_i + 8 * line_i,
-    BFRfont_config->ch_w * BFRfont_config->scale,
-    BFRfont_config->ch_h * BFRfont_config->scale
+    params->dst.a + params->margin.a + BFRfont_config->ch_w * ch_in_line_i + ch_in_line_i * params->text_padding.a,
+    params->dst.b + params->margin.b + BFRfont_config->ch_h * line_i + params->text_padding.b* line_i,
+    BFRfont_config->ch_w * params->scale.a,
+    BFRfont_config->ch_h * params->scale.b
   };
 
   SDL_RenderCopy(renderer, font_texture, &r_src, &r_dst);
 }
 
-void render_line(SDL_Renderer* renderer, SDL_Texture* font_texture, char* ch, int line_i){
+void render_line(SDL_Renderer* renderer, SDL_Texture* font_texture, char* ch, int line_i, Font_Render_Params* params){
   int i = 0;
   while (ch[i] != '\0'){
-    render_ch(renderer, font_texture, ch[i], (int)i+1, line_i);
+    render_ch(renderer, font_texture, ch[i], (int)i+1, line_i, params);
     i++;
   }
 }
 
-void render_lines(SDL_Renderer* renderer, SDL_Texture* font_texture, char* ch){
+void render_lines(SDL_Renderer* renderer, SDL_Texture* font_texture, char* ch, Font_Render_Params* params){
   int i = 0;
-  int ch_i = 1;
-  int line_i = 1;
+  int ch_i = 0;
+  int line_i = 0;
   while (ch[i] != '\0'){
     if (ch[i] == '\n'){
       line_i++;
@@ -166,7 +177,7 @@ void render_lines(SDL_Renderer* renderer, SDL_Texture* font_texture, char* ch){
       i++;
       continue;
     }
-    render_ch(renderer, font_texture, ch[i], ch_i, line_i);
+    render_ch(renderer, font_texture, ch[i], ch_i, line_i, params);
     ch_i++;
     i++;
   }
