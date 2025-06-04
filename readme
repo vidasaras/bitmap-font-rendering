@@ -17,7 +17,7 @@ Usage:
 
 4. Load ASCII values using `load_ascii("input", syntaxValid)`.
 
-5. Use `render_ch()`, `render_line()`, or `render_lines()` to draw text.
+5. Use `render_ch()`, `render_line()`, or `render_lines()` to draw text using `Font_Render_Params` struct.
 
 6. Call `bfr_destroy()` when done.
 
@@ -39,12 +39,24 @@ struct Font_config {
     int ch_line;     // Number of characters per line in the texture
     int nm_line;     // Total number of lines in the texture
     int nm_ch;       // Total number of characters (used to allocate ASCII table)
-};
+}; // Struct for holding data to load characters from the font.png
+
+struct Pair_O_Vals {
+    int a,b;
+} // Helper struct to hold a pair of values along x and y axes seperately.
+
+struct Font_Render_Params {
+  struct Pair_O_Vals dst, // destination x and y
+                     margin, // margin around the text
+                     text_padding, // padding between characters and lines
+                     scale; // scale of characters in width and height
+  int line_width; // character length for line wrapping (unimplemented)
+}; // Struct for holding data to render text
 
 Functions:
 ----------
 
-1. int bfr_init(struct Font_config conf)
+1. int bfr_init(Font_config conf)
    - Initializes internal font configuration using the provided settings.
    - Must be called before rendering.
    - Returns 0 on success.
@@ -52,7 +64,7 @@ Functions:
 2. void bfr_destroy()
    - Frees internal memory used for font configuration and ASCII table.
 
-3. int load_font_image(SDL_Renderer renderer, char* file, &ptr)
+3. int load_font_image(SDL_Renderer* renderer, char* file, &ptr)
   - Load a font texture from file and set it to blend mode.
   - ptr is a pointer to a `SDL_Texture`.
   - Returns 0 on success, 1 on failure.
@@ -89,15 +101,15 @@ Functions:
         89:0 (optional if the nm_ch=88)
     This will store 88:$(32) .
 
-5. void render_ch(SDL_Renderer* renderer, SDL_Texture* font_texture, char ch, int ch_in_line_i, int line_i)
+5. void render_ch(SDL_Renderer* renderer, SDL_Texture* font_texture, char ch, int ch_in_line_i, int line_i, Font_Render_Params* params)
    - Renders a single character `ch` using its lookup index.
    - `ch_in_line_i` is the horizontal index in the text.
    - `line_i` is the vertical line index.
 
-6. void render_line(SDL_Renderer* renderer, SDL_Texture* font_texture, char* ch, int line_i)
+6. void render_line(SDL_Renderer* renderer, SDL_Texture* font_texture, char* ch, int line_i, Font_Render_Params* params)
    - Renders a full line of text `ch` at line index `line_i`.
 
-7. void render_lines(SDL_Renderer* renderer, SDL_Texture* font_texture, char* ch)
+7. void render_lines(SDL_Renderer* renderer, SDL_Texture* font_texture, char* ch, Font_Render_Params* params)
    - Renders multiple lines of text split by newline (`\n`) characters.
 
 Dependencies:
