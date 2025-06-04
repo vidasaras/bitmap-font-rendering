@@ -41,11 +41,11 @@ int main(){
   SDL_RenderDrawRect(renderer, &rect);
 
   Font_Render_Params params  = {
-    (Pair_O_Vals) {100, 100}, //dst
-    (Pair_O_Vals) {10, 10}, // margin
-    (Pair_O_Vals) {3, 8}, // padding of characters and lines
-    (Pair_O_Vals) {1, 1}, // scale in w and h
-    0 // wrap length
+    100, 100, //dst
+    10, 10,   // margin
+    3, 8,     // padding of characters and lines
+    1, 1,     // scale in w and h
+    0         // wrap length
   };
 
   render_lines(renderer, font_texture, "Hello, World!", &params);

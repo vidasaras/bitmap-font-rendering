@@ -16,16 +16,12 @@ typedef struct Font_config {
       nm_ch;
 } Font_config;
 
-typedef struct Pair_O_Vals{
-  int a, b;
-} Pair_O_Vals;
-
 typedef struct Font_Render_Params {
-  struct Pair_O_Vals dst,
-                     margin,
-                     text_padding,
-                     scale;
-  int line_width;
+  int dst_x, dst_y,
+      margin_x, margin_y,
+      text_padding_ch, text_padding_ln,
+      scale_w, scale_h,
+      line_width;
 } Font_Render_Params;
 
 int bfr_init(struct Font_config conf);
@@ -149,10 +145,10 @@ void render_ch(SDL_Renderer* renderer, SDL_Texture* font_texture, char ch, int c
 
   SDL_Rect r_src = {x, y, BFRfont_config->ch_w, BFRfont_config->ch_h};
   SDL_Rect r_dst = {
-    params->dst.a + params->margin.a + BFRfont_config->ch_w * ch_in_line_i + ch_in_line_i * params->text_padding.a,
-    params->dst.b + params->margin.b + BFRfont_config->ch_h * line_i + params->text_padding.b* line_i,
-    BFRfont_config->ch_w * params->scale.a,
-    BFRfont_config->ch_h * params->scale.b
+    params->dst_x + params->margin_x + BFRfont_config->ch_w * ch_in_line_i + ch_in_line_i * params->text_padding_ch,
+    params->dst_y + params->margin_y + BFRfont_config->ch_h * line_i + params->text_padding_ln * line_i,
+    BFRfont_config->ch_w * params->scale_w,
+    BFRfont_config->ch_h * params->scale_h
   };
 
   SDL_RenderCopy(renderer, font_texture, &r_src, &r_dst);

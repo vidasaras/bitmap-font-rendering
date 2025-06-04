@@ -41,17 +41,14 @@ struct Font_config {
     int nm_ch;       // Total number of characters (used to allocate ASCII table)
 }; // Struct for holding data to load characters from the font.png
 
-struct Pair_O_Vals {
-    int a,b;
-} // Helper struct to hold a pair of values along x and y axes seperately.
-
 struct Font_Render_Params {
-  struct Pair_O_Vals dst, // destination x and y
-                     margin, // margin around the text
-                     text_padding, // padding between characters and lines
-                     scale; // scale of characters in width and height
-  int line_width; // character length for line wrapping (unimplemented)
+  int dst_x, dst_y,                     // destination x and y
+      margin_x, margin_y,               // margin around the text
+      text_padding_ch, text_padding_ln, // padding between characters and lines
+      scale_w, scale_h,                 // scale of characters in width and height
+      line_width;                       // character length for line wrapping (unimplemented)
 }; // Struct for holding data to render text
+
 
 Functions:
 ----------
