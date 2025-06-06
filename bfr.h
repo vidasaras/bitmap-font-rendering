@@ -38,6 +38,7 @@ void render_line(SDL_Renderer* renderer, SDL_Texture* font_texture, char* ch, in
 // Renders a line of text at the given line index.
 void render_lines(SDL_Renderer* renderer, SDL_Texture* font_texture, char* ch, Font_Render_Params* params);
 // Renders multiple lines of text separated by '\n'.
+void render_lines_wrapped(SDL_Renderer* renderer, SDL_Texture* font_texture, char* ch, Font_Render_Params* params);
 
 #ifdef BFR_IMPLEMENTATION
 
@@ -157,7 +158,7 @@ void render_ch(SDL_Renderer* renderer, SDL_Texture* font_texture, char ch, int c
 void render_line(SDL_Renderer* renderer, SDL_Texture* font_texture, char* ch, int line_i, Font_Render_Params* params){
   int i = 0;
   while (ch[i] != '\0'){
-    render_ch(renderer, font_texture, ch[i], (int)i+1, line_i, params);
+    render_ch(renderer, font_texture, ch[i], (int)i, line_i, params);
     i++;
   }
 }
@@ -176,6 +177,35 @@ void render_lines(SDL_Renderer* renderer, SDL_Texture* font_texture, char* ch, F
     render_ch(renderer, font_texture, ch[i], ch_i, line_i, params);
     ch_i++;
     i++;
+  }
+}
+
+void render_lines_wrapped(SDL_Renderer* renderer, SDL_Texture* font_texture, char ch[], Font_Render_Params* params){
+  char* token = strtok(ch, " ");
+  int curr_ln_w = 0;
+  int max_ln_w = BFRfont_config->ch_w*params->scale_w*params->line_width + params->text_padding_ch*(params->line_width-1);
+  int line_i = 0;
+  int doContainN = 0;
+  int dst_x = params->dst_x;
+  while (token != NULL){
+    int token_l = strlen(token);
+    int token_w = BFRfont_config->ch_w*params->scale_w*token_l + (params->text_padding_ch*(token_l-1));
+    int loc_doContainN = 0;
+    if(strchr(token, '\n') != NULL){
+      token_l -= 1;
+      loc_doContainN = 1;
+      token_w -= BFRfont_config->ch_w + params->text_padding_ch;
+    }
+    params->dst_x += curr_ln_w;
+    if ((max_ln_w - curr_ln_w) < token_w || max_ln_w <= curr_ln_w || doContainN == 1){
+      curr_ln_w = 0;
+      params->dst_x = dst_x;
+      line_i++;
+    }
+    render_line(renderer, font_texture, token, line_i, params);
+    curr_ln_w += token_w + BFRfont_config->ch_w*params->scale_w + params->text_padding_ch;
+    doContainN = loc_doContainN;
+    token = strtok(NULL, " ");
   }
 }
 

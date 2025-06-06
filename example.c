@@ -2,6 +2,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <unistd.h>
+#include <string.h>
 #define BFR_IMPLEMENTATION
 #include "bfr.h"
 
@@ -35,7 +36,7 @@ int main(){
 
   load_ascii("input2", 1);
 
-  SDL_Rect rect = {100, 100, 200, 300};
+  SDL_Rect rect = {100, 100, 40*12+11*3, 300};
   SDL_SetRenderDrawColor(renderer, 250, 0, 0, 250);
 
   SDL_RenderDrawRect(renderer, &rect);
@@ -45,13 +46,15 @@ int main(){
     10, 10,   // margin
     3, 8,     // padding of characters and lines
     1, 1,     // scale in w and h
-    0         // wrap length
+    12         // wrap length
   };
 
-  render_lines(renderer, font_texture, "Hello, World!", &params);
+  //render_line(renderer, font_texture, "Hello, World!\n", 0, &params);
+  char ch[] = "Is this thing even working?\n Who knows.";
+  render_lines_wrapped(renderer, font_texture, ch, &params);
 
   SDL_RenderPresent(renderer);
-  sleep(3);
+  sleep(10);
 
   bfr_destroy();
   SDL_DestroyTexture(font_texture);

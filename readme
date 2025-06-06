@@ -17,7 +17,7 @@ Usage:
 
 4. Load ASCII values using `load_ascii("input", syntaxValid)`.
 
-5. Use `render_ch()`, `render_line()`, or `render_lines()` to draw text using `Font_Render_Params` struct.
+5. Use `render_ch()`, `render_line()`, `render_lines()` or `render_lines_wrapped()` to draw text using `Font_Render_Params` struct.
 
 6. Call `bfr_destroy()` when done.
 
@@ -108,6 +108,16 @@ Functions:
 
 7. void render_lines(SDL_Renderer* renderer, SDL_Texture* font_texture, char* ch, Font_Render_Params* params)
    - Renders multiple lines of text split by newline (`\n`) characters.
+
+8. void render_lines_wrapped(SDL_Renderer* renderer, SDL_Texture* font_texture, char ch[], Font_Render_Params* params)
+   - `ch[]` must be provided as an array not a string(`ch*`).
+   - `params.line_width` should declare how many characters will be included in
+     a single line.
+   - If you want to use line breaks '\n' in the `ch[]` string, you must
+     construct the string in this way:
+        char ch[] = "Hello,\n World\n";
+     Note: line breaks should be attached to words and put a ' ' after that.
+     Line breaks are not (should not be) counted in `params.line_width`.
 
 Dependencies:
 -------------
